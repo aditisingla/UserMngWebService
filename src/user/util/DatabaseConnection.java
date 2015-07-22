@@ -4,19 +4,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseConnection {
+import org.apache.log4j.Logger;
 
-	public static Connection getConnection() {
+public class DatabaseConnection {
+	static Logger logger = Logger.getLogger(DatabaseConnection.class);
+
+	public static Connection getConnection() throws SQLException {
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","root");
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
-			ex.printStackTrace();
+			throw new SQLException(ex.getMessage(), ex);
 		} catch (Exception e) {
-			System.out.println("Exception: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("Error occured creating db connection: ", e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 		return conn;
 	}
@@ -25,7 +28,8 @@ public class DatabaseConnection {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("Error occured closing db connection: ", e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 }

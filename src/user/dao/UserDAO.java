@@ -6,9 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import user.dto.User;
 
 public class UserDAO {
+	static Logger logger = Logger.getLogger(UserDAO.class);
+	
 	public ArrayList<User> getUserList(Connection connection) {
 		ArrayList<User> userData = new ArrayList<User>();
 		PreparedStatement ps;
@@ -23,7 +27,7 @@ public class UserDAO {
 				userData.add(userObject);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("Error occured while getting user list: ", e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 		return userData;
@@ -37,7 +41,7 @@ public class UserDAO {
 			ps.setString(2, userObject.getLastName());
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("Error occured while adding user: ", e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 		return userObject;
